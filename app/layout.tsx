@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { Web3Provider } from '@/contexts/Web3Context'
+import DebugWalletWrapper from '@/components/DebugWalletWrapper'
+// import DebugWallet from '@/components/DebugWallet'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,12 +24,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 在服务器端不渲染调试组件
+  const isDevelopment = process.env.NODE_ENV === 'development'
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+          <Web3Provider>
+          {children}
+           <DebugWalletWrapper />
+        </Web3Provider>
       </body>
     </html>
   );

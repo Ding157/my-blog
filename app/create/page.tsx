@@ -14,33 +14,38 @@ export default function CreateBlog() {
     is_published: false
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsSubmitting(true)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  try {
+    const response = await fetch('/api/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
 
-    try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        router.push('/')
-        router.refresh()
-      } else {
-        const error = await response.json()
-        alert(error.error || '发布失败')
-      }
-    } catch (error) {
-      alert('发布失败，请重试')
-    } finally {
-      setIsSubmitting(false)
+    const result = await response.json()
+    
+    console.log('发布响应:', { status: response.status, result })
+    
+    if (response.ok) {
+      router.push('/')
+      router.refresh()
+    } else {
+      // 显示具体的错误信息
+      alert(`发布失败: ${result.error || '未知错误'}`)
+      console.error('API 错误详情:', result)
     }
+  } catch (error) {
+    console.error('网络错误:', error)
+    alert(`网络错误: ${error instanceof Error ? error.message : '未知错误'}`)
+  } finally {
+    setIsSubmitting(false)
   }
+}
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
