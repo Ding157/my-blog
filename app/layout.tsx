@@ -33,7 +33,7 @@ export default function RootLayout({
       >
           <Web3Provider>
           {children}
-           <DebugWalletWrapper />
+           {/* <DebugWalletWrapper /> */}
         </Web3Provider>
       </body>
     </html>

@@ -4,10 +4,13 @@ import { supabaseServer } from '@/lib/supabase/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const slug = params.slug
+    // 等待 params Promise 解析
+    const resolvedParams = await params
+    const slug = resolvedParams.slug
+
     console.log('🔍 API调试: 查询slug:', slug)
 
     // 方法1: 精确查询

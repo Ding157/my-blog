@@ -64,7 +64,7 @@ export default async function Home() {
       </nav>
 
       {/* 调试信息 */}
-      <div className="max-w-4xl mx-auto py-4 px-4">
+      {/* <div className="max-w-4xl mx-auto py-4 px-4">
         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
           <p className="text-sm text-yellow-800">
             调试信息: 共找到 {posts.length} 篇博客
@@ -75,7 +75,7 @@ export default async function Home() {
             </p>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* 博客列表 */}
       <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
