@@ -1,4 +1,4 @@
-// app/create/page.tsx
+// app/create/page.tsx (更新 handleSubmit 函数)
 'use client'
 
 import { useState } from 'react'
@@ -14,38 +14,55 @@ export default function CreateBlog() {
     is_published: false
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-  setIsSubmitting(true)
 
-  try {
-    const response = await fetch('/api/posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
 
-    const result = await response.json()
-    
-    console.log('发布响应:', { status: response.status, result })
-    
-    if (response.ok) {
-      router.push('/')
-      router.refresh()
-    } else {
-      // 显示具体的错误信息
-      alert(`发布失败: ${result.error || '未知错误'}`)
-      console.error('API 错误详情:', result)
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      console.log('发布响应状态:', response.status, response.statusText)
+
+      let result
+      try {
+        // 先检查响应是否有内容
+        const text = await response.text()
+        console.log('原始响应:', text)
+        
+        if (text) {
+          result = JSON.parse(text)
+        } else {
+          result = { error: '服务器返回空响应' }
+        }
+      } catch (parseError) {
+        console.error('JSON 解析错误:', parseError)
+        result = { error: '服务器响应格式错误' }
+      }
+      
+      console.log('发布响应:', { status: response.status, result })
+
+      if (response.ok) {
+        router.push('/')
+        router.refresh()
+      } else {
+        // 显示具体的错误信息
+        alert(`发布失败: ${result.error || '未知错误'}`)
+        console.error('API 错误详情:', result)
+      }
+    } catch (error) {
+      console.error('网络错误:', error)
+      alert(`网络错误: ${error instanceof Error ? error.message : '未知错误'}`)
+    } finally {
+      setIsSubmitting(false)
     }
-  } catch (error) {
-    console.error('网络错误:', error)
-    alert(`网络错误: ${error instanceof Error ? error.message : '未知错误'}`)
-  } finally {
-    setIsSubmitting(false)
   }
-}
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
