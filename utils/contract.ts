@@ -1,30 +1,41 @@
 // utils/contract.ts
+// utils/contract.ts
 import { ethers } from 'ethers'
 
-// 合约 ABI
+// 完整的合约 ABI - 根据你的合约代码更新
 export const BEGGING_CONTRACT_ABI = [
+  // 基础函数
   "function donate() external payable",
   "function withdraw() external",
+  "function owner() external view returns (address)",
+  
+  // 查看函数
   "function getDonation(address) external view returns (uint256)",
   "function getTopDonors() external view returns (tuple(address donorAddress, uint256 amount)[3])",
   "function getContractBalance() external view returns (uint256)",
   "function totalDonations() external view returns (uint256)",
-  "function owner() external view returns (address)",
   "function donations(address) external view returns (uint256)",
+  
+  // 时间管理函数
   "function setDonationPeriod(uint256, uint256) external",
   "function disableTimeRestriction() external",
   "function timeRestrictionEnabled() external view returns (bool)",
   "function startTime() external view returns (uint256)",
   "function endTime() external view returns (uint256)",
+  
+  // 事件
   "event Donation(address indexed donor, uint256 amount, uint256 timestamp)",
-  "event Withdrawal(address indexed owner, uint256 amount, uint256 timestamp)"
+  "event Withdrawal(address indexed owner, uint256 amount, uint256 timestamp)",
+  
+  // receive 函数
+  "receive() external payable"
 ]
 
-// 合约地址 (部署后替换这个地址)
-export const BEGGING_CONTRACT_ADDRESS = "0x34dbA68b642f7fc134d6f523a56063DeBD14D95f"
+// 部署后替换为你的实际合约地址
+export const BEGGING_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x34dbA68b642f7fc134d6f523a56063DeBD14D95f"
 
 export class BeggingContract {
-  private contract: ethers.Contract
+  public contract: ethers.Contract
   private signer: ethers.Signer
 
   constructor(signer: ethers.Signer) {
@@ -36,7 +47,7 @@ export class BeggingContract {
     )
   }
 
-    // 添加静态地址属性以便在组件中使用
+  // 添加静态地址属性以便在组件中使用
   static get address() {
     return BEGGING_CONTRACT_ADDRESS
   }
@@ -46,6 +57,12 @@ export class BeggingContract {
     const tx = await this.contract.donate({
       value: ethers.parseEther(amount)
     })
+    return await tx.wait()
+  }
+
+  // 提款 - 添加这个缺失的方法
+  async withdraw() {
+    const tx = await this.contract.withdraw()
     return await tx.wait()
   }
 

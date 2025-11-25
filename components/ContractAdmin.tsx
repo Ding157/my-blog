@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { useWeb3 } from '@/contexts/Web3Context'
-import { BeggingContract } from '@/utils/contract'
+import { BeggingContract } from '@/utils/contract'  
 import { ethers } from 'ethers'
 
 export default function ContractAdmin() {
